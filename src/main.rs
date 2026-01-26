@@ -5,6 +5,7 @@ use dialoguer::Input;
 use command::Command;
 use item::Item;
 
+// Todo: move this to command
 fn print_help(){
 	println!("Available commands:");
 	println!("  add <item> - Add an item to the todo list");
@@ -45,6 +46,27 @@ fn add_to_list(todo_list: &mut Vec<Item>, items_to_add: Vec<String>)
 	}
 }
 
+fn check_item(todo_list: &mut Vec<Item>, index:u32)
+{
+	let index = index as usize;
+	if index == 0 || index > todo_list.len() {
+		println!("Error: Index {} is out of bounds", index)
+	} else {
+		todo_list[index - 1].check()
+	}
+}
+
+fn uncheck_item(todo_list: &mut Vec<Item>, index:u32)
+{
+	let index = index as usize;
+	if index == 0 || index > todo_list.len() {
+		println!("Error: Index {} is out of bounds", index)
+	} else {
+		todo_list[index - 1].uncheck()
+	}
+}
+
+
 fn main() {
 	let mut todo_list: Vec<Item> = Vec::new();
 
@@ -62,20 +84,22 @@ fn main() {
 
 		let input_command = Command::from(command_input);
 		match input_command {
-			Command::Exit => break,
 			Command::Add(items) => {
-				if items.is_empty() {
+                if items.is_empty() {
 					println!("Error: 'add' command requires at least one item to add.");
 				} else {
 					println!("Adding {} item(s) to the list.", items.len());
 					add_to_list(&mut todo_list, items)
 				}
 			}
+			Command::Check(item_index) => check_item(&mut todo_list, item_index),
+			Command::Exit => break,
 			Command::Remove(items) => {
 				remove_items(&mut todo_list, &items);
 			}
-			Command::RemoveIndex(item_indexes)=> remove_item_by_index(&mut todo_list, item_indexes),
+			Command::RemoveIndex(item_index)=> remove_item_by_index(&mut todo_list, item_index),
 			Command::Help => print_help(),
+            Command::Uncheck(item_index) => uncheck_item(&mut todo_list, item_index),
 			Command::Unknown(input) => {
 				println!("Unknown command: '{}'", input);
 				print_help()
