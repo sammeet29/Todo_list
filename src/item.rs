@@ -1,6 +1,6 @@
 pub struct Item{
 	value: String,
-	is_checked : bool,
+	pub is_checked : bool,
 }
 
 impl Item {
@@ -19,7 +19,6 @@ impl Item {
 	{
 		value_to_check == self.value
 	}
-
 }
 
 use std::fmt;
@@ -36,4 +35,31 @@ impl fmt::Display for Item {
 pub fn new_item(value:String) -> Item
 {
 	Item {value, is_checked:false}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn test_new_item(){
+		let value: String = "Mango".to_string();
+		let uut: Item = new_item(value.clone());
+		assert!(!uut.is_checked);
+		assert!(uut.has_value(&value));
+	}
+
+	#[test]
+	fn test_check_uncheck(){
+		let value: String = "Mango".to_string();
+		let mut uut: Item = new_item(value);
+
+		assert!(!uut.is_checked);
+
+		uut.check();
+		assert!(uut.is_checked);
+
+		uut.uncheck();
+		assert!(!uut.is_checked);
+	}
+
 }

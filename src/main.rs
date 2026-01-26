@@ -11,6 +11,10 @@ fn print_help(){
 	println!("  add <item> - Add an item to the todo list");
 	println!("  remove (r) <item> - Remove an item from the todo list");
 	println!("  removeIndex (ri) <index> - Remove an item from the todo list by index");
+	println!("  check (c) <item> - Mark an item as completed");
+	println!("  checkIndex (ci) <index> - Mark an item as completed by index");
+	println!("  uncheck (u) <item> - Mark an item as not completed");
+	println!("  uncheckIndex (ui) <index> - Mark an item as not completed by index");
 	println!("  exit - Exit the program");
 }
 
@@ -46,7 +50,7 @@ fn add_to_list(todo_list: &mut Vec<Item>, items_to_add: Vec<String>)
 	}
 }
 
-fn check_item(todo_list: &mut Vec<Item>, index:u32)
+fn check_index(todo_list: &mut Vec<Item>, index:u32)
 {
 	let index = index as usize;
 	if index == 0 || index > todo_list.len() {
@@ -56,13 +60,32 @@ fn check_item(todo_list: &mut Vec<Item>, index:u32)
 	}
 }
 
-fn uncheck_item(todo_list: &mut Vec<Item>, index:u32)
+fn check_item(todo_list: &mut Vec<Item>, item_value:String)
+{
+	for item in todo_list {
+		if item.has_value(&item_value) {
+			item.check()
+		}
+	}
+}
+
+fn uncheck_index(todo_list: &mut Vec<Item>, index:u32)
 {
 	let index = index as usize;
 	if index == 0 || index > todo_list.len() {
 		println!("Error: Index {} is out of bounds", index)
 	} else {
 		todo_list[index - 1].uncheck()
+	}
+}
+
+fn uncheck_item(todo_list: &mut Vec<Item>, item_value:String)
+{
+	for item in todo_list {
+		if item.has_value(&item_value) {
+			item.uncheck();
+			return;
+		}
 	}
 }
 
@@ -92,14 +115,16 @@ fn main() {
 					add_to_list(&mut todo_list, items)
 				}
 			}
-			Command::Check(item_index) => check_item(&mut todo_list, item_index),
+			Command::CheckIndex(item_index) => check_index(&mut todo_list, item_index),
+			Command::Check(item_value) => check_item(&mut todo_list, item_value),
 			Command::Exit => break,
 			Command::Remove(items) => {
 				remove_items(&mut todo_list, &items);
 			}
 			Command::RemoveIndex(item_index)=> remove_item_by_index(&mut todo_list, item_index),
 			Command::Help => print_help(),
-            Command::Uncheck(item_index) => uncheck_item(&mut todo_list, item_index),
+            Command::Uncheck(item_value) => uncheck_item(&mut todo_list, item_value),
+			Command::UncheckIndex(item_index) => uncheck_index(&mut todo_list, item_index),
 			Command::Unknown(input) => {
 				println!("Unknown command: '{}'", input);
 				print_help()

@@ -2,10 +2,12 @@
 #[derive(Debug)]
 pub enum Command {
 	Add(Vec<String>),
-	Check(u32),
+	CheckIndex(u32),
+	Check(String),
 	Exit,
 	Help,
-	Uncheck(u32),
+	UncheckIndex(u32),
+	Uncheck(String),
 	Remove(Vec<String>),
 	RemoveIndex(u32),
 	Unknown(String),
@@ -41,14 +43,18 @@ impl From<String> for Command {
 
 		// The 1st argument is command
 		let cmd = parts[0].to_lowercase();
+
 		// Collect all other strings as argument to the command
 		let args: Vec<String> = parts[1..].iter().map(|s| s.to_string()).collect();
 
 		match cmd.as_str() {
 			"add" | "a" => Command::Add(args),
 			"check" | "c" => {
+				Command::Check(parts[1].to_string())
+			}
+			"checkIndex" | "ci" => {
 				match get_number(args) {
-					Ok(number) => Command::Check(number),
+					Ok(number) => Command::CheckIndex(number),
 					Err(_) => Command::Unknown("Invalid Argument".to_string()),
 				}
 			}
@@ -62,11 +68,14 @@ impl From<String> for Command {
 			},
 			"help" | "h" => Command::Help,
 			"uncheck" | "u" => {
+				Command::Uncheck(parts[1].to_string())
+			}
+			"uncheckIndex" | "ui" => {
 				match get_number(args) {
-					Ok(number) => Command::Uncheck(number),
+					Ok(number) => Command::UncheckIndex(number),
 					Err(_) => Command::Unknown("Invalid Argument".to_string())
 				}
-			}
+			},
 
 			_ => Command::Unknown(trimmed.to_string()),
 		}
