@@ -1,7 +1,9 @@
 mod command;
+mod item;
 
 use dialoguer::Input;
 use command::Command;
+use item::Item;
 
 fn print_help(){
 	println!("Available commands:");
@@ -11,9 +13,10 @@ fn print_help(){
 	println!("  exit - Exit the program");
 }
 
-fn remove_items(todo_list: &mut Vec<String>, items: &Vec<String>) {
+// Remove one or more items from the list.
+fn remove_items(todo_list: &mut Vec<Item>, items: &Vec<String>) {
 	for item in items {
-		if let Some(pos) = todo_list.iter().position(|x| x == item) {
+		if let Some(pos) = todo_list.iter().position(|x| x.has_value(item)) {
 			todo_list.remove(pos);
 			println!("Removed item '{}' from the todo list.", item);
 		} else {
@@ -22,7 +25,8 @@ fn remove_items(todo_list: &mut Vec<String>, items: &Vec<String>) {
 	}
 }
 
-fn remove_item_by_index(todo_list: &mut Vec<String>, item_indexes: u32) {
+// Remove the given item index from the list.
+fn remove_item_by_index(todo_list: &mut Vec<Item>, item_indexes: u32) {
 	let index = item_indexes as usize;
 	if index == 0 || index > todo_list.len() {
 		println!("Error: Index {} is out of bounds.", item_indexes);
@@ -32,8 +36,17 @@ fn remove_item_by_index(todo_list: &mut Vec<String>, item_indexes: u32) {
 	}
 }
 
+// Add one or more items to the list
+fn add_to_list(todo_list: &mut Vec<Item>, items_to_add: Vec<String>)
+{
+	for item_value in items_to_add{
+		use item::new_item;
+		todo_list.push(new_item(item_value));
+	}
+}
+
 fn main() {
-	let mut todo_list: Vec<String> = Vec::new();
+	let mut todo_list: Vec<Item> = Vec::new();
 
 	loop {
 		let mut index:u32 = 1;
@@ -55,7 +68,7 @@ fn main() {
 					println!("Error: 'add' command requires at least one item to add.");
 				} else {
 					println!("Adding {} item(s) to the list.", items.len());
-					todo_list.extend(items);
+					add_to_list(&mut todo_list, items)
 				}
 			}
 			Command::Remove(items) => {
