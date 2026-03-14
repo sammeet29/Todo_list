@@ -62,4 +62,22 @@ mod tests {
 		assert!(!uut.is_checked);
 	}
 
+	#[test]
+	fn test_has_value(){
+		let value: String = "Mango".to_string();
+		let uut: Item = new_item(value.clone());
+		assert!(uut.has_value(&value));
+		assert!(!uut.has_value("Apple"));
+	}
+
+	#[test]
+	fn test_format(){
+		let value: String = "Mango".to_string();
+		let mut uut: Item = new_item(value.clone());
+
+		assert_eq!(format!("{}", uut), value);
+		uut.check();
+		assert_eq!(format!("{}", uut), format!("~{}~", value));
+	}
+
 }
