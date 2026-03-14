@@ -14,6 +14,11 @@ impl TaskList {
 		}
 	}
 
+	pub fn add_item(&mut self, item_to_add: String)
+	{
+		self.items.push(item::new_item(item_to_add));
+	}
+
 	// To do:: Use &str instead of String
 	pub fn add(&mut self, items_to_add: Vec<String>)
 	{
@@ -22,15 +27,24 @@ impl TaskList {
 		}
 	}
 
-	pub fn remove_items(&mut self, items_to_remove: Vec<String>)
+	// pub fn remove_items(&mut self, items_to_remove: Vec<String>)
+	// {
+	// 	for item in &items_to_remove {
+	// 		if let Some(pos) = self.items.iter().position(|x| x.has_value(item)){
+	// 			self.items.remove(pos);
+	// 			println!("Removed item '{}' from the todo list.", item);
+	// 		} else {
+	// 			println!("Item '{}' not found in the todo list.", item);
+	// 		}
+	// 	}
+	// }
+
+	pub fn remove_item(&mut self, item_to_remove: &str)
 	{
-		for item in &items_to_remove {
-			if let Some(pos) = self.items.iter().position(|x| x.has_value(item)){
-				self.items.remove(pos);
-				println!("Removed item '{}' from the todo list.", item);
-			} else {
-				println!("Item '{}' not found in the todo list.", item);
-			}
+		if let Some(pos) = self.items.iter().position(|x| x.has_value(item_to_remove)){
+			self.items.remove(pos);
+		} else {
+			println!("Item {} not found in the todo list", item_to_remove);
 		}
 	}
 
@@ -134,7 +148,7 @@ mod unit_tests {
 		let test_item = "Mango";
 		assert!(is_in_list(&test_list, test_item));
 
-		test_list.remove_items(vec![String::from(test_item)]);
+		test_list.remove_item(test_item);
 		assert!(!is_in_list(&test_list, test_item));
 	}
 

@@ -1,9 +1,10 @@
 mod command;
 mod task_list;
+mod command_parser;
 
 use dialoguer::Input;
-use command::Command;
 use task_list::TaskList;
+use command_parser::{ListCommand, parse_command};
 
 // Todo: move this to command
 fn print_help(){
@@ -30,34 +31,29 @@ fn main() {
 			.interact_text()
 			.unwrap();
 
-		let input_command = Command::from(command_input);
-		match input_command {
-			Command::Add(items) => {
-                if items.is_empty() {
-					println!("Error: 'add' command requires at least one item to add.");
-				} else {
-					println!("Adding {} item(s) to the list.", items.len());
-					todo_list.add(items);
-				}
+		let input_command = parse_command(command_input);
+		if input_command.is_err()
+		{
+			continue;
+		}
+		match input_command.unwrap() {
+			ListCommand::Add{item} => {
+				todo_list.add_item(item);
 			}
-			Command::CheckIndex(item_index) => todo_list.check_index(item_index),
-			Command::Check(item_value) => todo_list.check_item(item_value),
-			Command::Exit => break,
-			Command::Remove(items) => {
-				todo_list.remove_items(items);
+			ListCommand::CheckIndex{ item_number} => todo_list.check_index(item_number),
+			ListCommand::Check{item} => todo_list.check_item(item),
+			ListCommand::Remove { item } => {
+				todo_list.remove_item(&item);
 			}
-			Command::RemoveIndex(item_index)=> {
+			ListCommand::RemoveIndex { item_index} => {
 				todo_list.remove_index(item_index);
 			}
-			Command::Help => print_help(),
-            Command::Uncheck(item_value) => todo_list.uncheck_item(item_value),
-			Command::UncheckIndex(item_index) => {
-				todo_list.uncheck_index(item_index);
+			// Command::Help => print_help(),
+			ListCommand::Uncheck{item} => todo_list.uncheck_item(item),
+			ListCommand::UncheckIndex{ item_number } => {
+				todo_list.uncheck_index(item_number);
 			}
-			Command::Unknown(input) => {
-				println!("Unknown command: '{}'", input);
-				print_help()
-			}
+			ListCommand::Exit => break
 		}
 	}
 }
