@@ -1,3 +1,4 @@
+#[derive(Clone, PartialEq, Debug)]
 pub struct Item{
 	value: String,
 	pub is_checked : bool,
