@@ -2,14 +2,14 @@
 #[derive(Debug)]
 pub enum Command {
 	Add(Vec<String>),
-	CheckIndex(u32),
+	CheckIndex(usize),
 	Check(String),
 	Exit,
 	Help,
-	UncheckIndex(u32),
+	UncheckIndex(usize),
 	Uncheck(String),
 	Remove(Vec<String>),
-	RemoveIndex(u32),
+	RemoveIndex(usize),
 	Unknown(String),
 }
 
@@ -18,11 +18,11 @@ enum CommandError {
 	NotValidNumber,
 }
 
-fn get_number(args:Vec<String>) -> Result< u32, CommandError> {
+fn get_number(args:Vec<String>) -> Result< usize, CommandError> {
 	if args.len() != 1 {
 		Err(CommandError::InvalidArgumentCounts)
 	}else{
-		let result = args[0].parse::<u32>();
+		let result = args[0].parse::<usize>();
 		match result {
 			Ok(index) => Ok(index),
 			Err(_) => Err(CommandError::NotValidNumber),
