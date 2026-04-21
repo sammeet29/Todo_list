@@ -1,23 +1,9 @@
-mod command;
-mod task_list;
 mod command_parser;
+mod task_list;
 
 use dialoguer::Input;
 use task_list::TaskList;
 use command_parser::{ListCommand, parse_command};
-
-// Todo: move this to command
-fn print_help(){
-	println!("Available commands:");
-	println!("  add <item> - Add an item to the todo list");
-	println!("  remove (r) <item> - Remove an item from the todo list");
-	println!("  removeIndex (ri) <index> - Remove an item from the todo list by index");
-	println!("  check (c) <item> - Mark an item as completed");
-	println!("  checkIndex (ci) <index> - Mark an item as completed by index");
-	println!("  uncheck (u) <item> - Mark an item as not completed");
-	println!("  uncheckIndex (ui) <index> - Mark an item as not completed by index");
-	println!("  exit - Exit the program");
-}
 
 fn main() {
 	let mut todo_list: TaskList = TaskList::new();
