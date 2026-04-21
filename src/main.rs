@@ -36,7 +36,7 @@ fn main() {
 		{
 			continue;
 		}
-		match input_command.unwrap() {
+		match input_command.unwrap().list_command {
 			ListCommand::Add{item} => {
 				todo_list.add_item(item);
 			}

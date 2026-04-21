@@ -23,16 +23,15 @@ pub enum ListCommand{
 // #[command(Version, about, long_about = None)]
 pub struct Cli{
     #[command(subcommand)]
-    list_command: ListCommand,
+    pub list_command: ListCommand,
 }
 
-pub fn parse_command(input: String) -> Result<ListCommand, clap::error::Error>
+pub fn parse_command(input: String) -> Result<Cli, clap::error::Error>
 {
     // Clap expects the 1st name to be program name. Add a dummy name to iterate.
     let input_vec=
         std::iter::once("program").chain(input.split_whitespace());
-    let args = Cli::parse_from(input_vec);
-    Ok(args.list_command)
+    Cli::try_parse_from(input_vec)
 }
 
 #[cfg(test)]
@@ -59,7 +58,8 @@ mod tests{
         for test in tests {
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            let list_command = result.unwrap().list_command;
+            match list_command {
                 ListCommand::Add {item} => assert_eq!(item, test.expected_item),
                 _ => panic!("Expected Add command"),
             }
@@ -77,7 +77,8 @@ mod tests{
         for test in tests{
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            let list_command = result.unwrap().list_command;
+            match list_command {
                 ListCommand::Remove { item } => assert_eq!(item, test.expected_item),
                 _ => panic!("Expected remove command"),
             }
@@ -95,7 +96,7 @@ mod tests{
         for test in tests{
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            match result.unwrap().list_command {
                 ListCommand::RemoveIndex { item_index } => {
                     assert_eq!(item_index, test.expected_index);
                 }
@@ -115,7 +116,7 @@ mod tests{
         for test in tests {
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            match result.unwrap().list_command {
                 ListCommand::Check{item} => assert_eq!(item, test.expected_item),
                 _ => panic!("Expected Check command"),
             }
@@ -133,7 +134,7 @@ mod tests{
         for test in tests{
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            match result.unwrap().list_command {
                 ListCommand::CheckIndex { item_number } => assert_eq!(item_number, test.expected_index),
                 _ => panic!("Expected CheckIndex command")
             }
@@ -151,7 +152,7 @@ mod tests{
         for test in tests {
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            match result.unwrap().list_command {
                 ListCommand::Uncheck{item} => assert_eq!(item, test.expected_item),
                 _ => panic!("Expected Check command"),
             }
@@ -169,7 +170,7 @@ mod tests{
         for test in tests{
             let result = parse_command(test.command);
             assert!(result.is_ok());
-            match result.unwrap() {
+            match result.unwrap().list_command {
                 ListCommand::UncheckIndex { item_number } => assert_eq!(item_number, test.expected_index),
                 _ => panic!("Expected Uncheck index command")
             }
@@ -180,34 +181,19 @@ mod tests{
     fn test_parse_exit_command() {
         let result = parse_command(String::from("exit"));
         assert!(result.is_ok());
-        assert!(matches!(result.unwrap(), ListCommand::Exit));
+        assert!(matches!(result.unwrap().list_command, ListCommand::Exit));
     }
 
-    // #[test]
-    // fn test_parse_invalid_command() {
-    //     let result = parse_commands("invalid command");
-    //     assert!(result.is_err());
-    // }
+    #[test]
+    fn test_parse_invalid_command() {
+        let result = parse_command(String::from("invalid command"));
+        assert!(result.is_err());
+    }
 
     // #[test]
     // fn test_parse_missing_arguments() {
     //     let result = parse_commands("add");
     //     assert!(result.is_err());
-    // }
-
-    // // Test all variants exist
-    // #[test]
-    // fn test_all_list_command_variants() {
-    //     let _add = ListCommand::Add { item: "test".to_string() };
-    //     let _remove = ListCommand::Remove { item: "test".to_string() };
-    //     let _check_item = ListCommand::CheckItem { item: "test".to_string() };
-    //     let _check = ListCommand::Check { item_number: 1 };
-    //     let _uncheck = ListCommand::Uncheck { item_number: 1 };
-    //     let _uncheck_item = ListCommand::UncheckItem { item: "test".to_string() };
-    //     let _exit = ListCommand::Exit;
-
-    //     // If this compiles, all variants exist
-    //     assert!(true);
     // }
 
     // // Parameterized testing approach
