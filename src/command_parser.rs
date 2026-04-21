@@ -28,22 +28,16 @@ pub struct Cli{
 
 pub fn parse_command(input: String) -> Result<ListCommand, clap::error::Error>
 {
-    let input_vec= input.split_whitespace();
+    // Clap expects the 1st name to be program name. Add a dummy name to iterate.
+    let input_vec=
+        std::iter::once("program").chain(input.split_whitespace());
     let args = Cli::parse_from(input_vec);
     Ok(args.list_command)
 }
 
 #[cfg(test)]
 mod tests{
-    use super::*;    pub fn parse_command(input: String) -> Result<ListCommand, clap::error::Error> {
-        // Clap expects the 1st name to be program name. Add a dummy name to iterator
-        let args
-            = std::iter::once("dummy").chain(input.split_whitespace());
-
-        let cli = Cli::parse_from(args);
-        Ok(cli.list_command)
-    }
-
+    use super::*;
     struct ItemTestCase{
         command: String,
         expected_item: String,
